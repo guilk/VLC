@@ -1,0 +1,62 @@
+description: fusion in decoder
+
+target:
+  service: amlk8s
+  # run "pt target list amlk8s" to list the names of available AMLK8s targets
+  name: itphyperdgx2cl2
+  vc: hcrr01
+
+environment:
+  image: ninja0/mmaction2-cuda11.0:latest
+  setup:
+    - export MKL_SERVICE_FORCE_INTEL=1
+    - export TORCH_DISTRIBUTED_DEBUG=INFO
+    - pip install timm==0.3.2 --user
+    - pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html --user
+    - pip install tensorboard --user
+    - pip install tqdm --user
+    - pip install pyyaml --user
+    - pip install matplotlib --user
+    - pip install requests --user
+    - pip install scikit-image --user
+    - pip install anytree --user
+    - pip install regex --user
+    - pip install boto3 --user
+    - ulimit -n 60000
+
+code:
+  # local directory of the code. this will be uploaded to the server.
+  # $CONFIG_DIR is expanded to the directory of this config file
+  local_dir: $CONFIG_DIR
+
+# data:
+storage:
+  data:
+    storage_account_name: liangkegui
+    container_name: vldatasets
+    mount_dir: /mnt/root
+
+  datafolder:
+    storage_account_name: liangkegui
+    container_name: knowledgereasoning
+
+# list of jobs to run, we run 2 jobs in this example
+jobs:
+
+- name: knowledge_reasoning
+  sku: G16
+  command:
+    - export NGPU=16; python -m torch.distributed.launch --nproc_per_node=16 main_finetune.py
+      --batch_size 64
+      --model vit_base_patch16
+      --finetune /mnt/root/imagenet_baseline_output_full/checkpoint-200.pth
+      --epochs 100
+      --blr 5e-4
+      --layer_decay 0.65
+      --weight_decay 0.05
+      --drop_path 0.1
+      --reprob 0.25
+      --mixup 0.8
+      --cutmix 1.0
+      --dist_eval
+      --data_path /hcrr01-weka/liangkegui/datasets/ILSVRC2012

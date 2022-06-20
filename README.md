@@ -11,6 +11,11 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+## Pre-trained models
+Task | Base set (4M) | Large set (5.6M)
+---|---|---
+`Pre-training` | [vlc_baseset.ckpt](https://drive.google.com/file/d/1NOd0qsjwltcOCfHpbp10hiPKRi9CkN0H/view?usp=sharing)| [vlc_largeset.ckpt](https://drive.google.com/file/d/10faDtJQfODnXlPFr4FGsQmYgICrBQph2/view?usp=sharing)
+`VQA` | [vlc_baseset_vqa_submission](https://drive.google.com/file/d/1UzAMOIc2EH6LoJ_EJaD1bWZfQ8Yg1jwt/view?usp=sharing) | [vlc_largeset_vqa_submission](https://drive.google.com/file/d/19z7vAsMmU5gifbWMYYJDNN5Aezy95F8y/view?usp=sharing)
 ## Dataset Preparation
 
 We follow [ViLT](https://github.com/dandelin/ViLT) and use `pyarrow` to serialize the datasets. See [this link](https://github.com/dandelin/ViLT/blob/master/DATA.md) for details.

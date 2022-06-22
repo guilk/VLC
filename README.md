@@ -22,6 +22,8 @@ We follow [ViLT](https://github.com/dandelin/ViLT) and use `pyarrow` to serializ
 
 ## Pre-training
 
+As there are some corrupted images in Google Conceptual captions, we remove the images if they cannot be loaded by PIL. Check `check_valid_images.py` in `data_process` folder. 
+
 ```bash
 python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> task_mlm_itm_mae per_gpu_batchsize=<BS_FITS_YOUR_GPU> whole_word_masking=True step25k image_size=384 pretrain_path=<PRETRAIN_PATH> log_dir=<LOG_FOLDER> mae_weight=1.0
 ```
@@ -29,6 +31,11 @@ python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NOD
 ## Fine-tuning on Downstream Tasks
 
 ### VQAv2
+
+Following ALBEF and UNITER, we also use VG-VQA data during VQAv2 finetuning. 
+
+We only consider the VG-VQA question-answer pairs if 1) the corresponding images are in VQAv2 training or validation split; 2) the answers appear in the [VQAv2 answer set](https://github.com/guilk/VLC/releases/download/VQAv2_metadata/coco_vqa_label_info.pkl).
+Check the `map_vg_mscoco.py` and `write_valid_vgqa.py` in `data_process` folder. 
 
 ```bash
 python run.py with data_root=<ARROW_ROOT> num_gpus=<NUM_GPUS> num_nodes=<NUM_NODES> task_finetune_vqa_mae_randaug per_gpu_batchsize=<BS_FITS_YOUR_GPU> load_path=<PRETRAINED_MODEL> log_dir=<LOG_FOLDER> image_size=576 learning_rate=5e-4
